@@ -1,0 +1,8 @@
+dao\DadosComponentesDao.class
+modelo\Maquina.class
+conexao\Conexao.class
+teste\Teste.class
+dao\MaquinaDao.class
+modelo\DadosComponentes.class
+dao\MaquinaTipoComponeneteDao.class
+modelo\MaquinaTipoComponente.class
