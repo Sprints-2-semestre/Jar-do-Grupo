@@ -16,7 +16,7 @@ public class Conexao {
 
         dataSource.setUsername("root");
 
-        dataSource.setPassword("verdi");
+        dataSource.setPassword("#Gf2023");
 
         this.conexaoDoBanco = new JdbcTemplate(dataSource);
     }

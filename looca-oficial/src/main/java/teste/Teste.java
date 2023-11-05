@@ -14,31 +14,25 @@ import dao.MaquinaTipoComponeneteDao;
 import oshi.SystemInfo;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Teste {
     public static void main(String[] args) {
-        Looca looca = new Looca();
-
+        MaquinaTipoComponeneteDao maquinaTipoComponeneteDao = new MaquinaTipoComponeneteDao();
         MaquinaDao maquinaDao = new MaquinaDao();
-        Sistema maquina = looca.getSistema();
-
-        maquinaDao.salvar(maquina);
-        System.out.println(maquinaDao.listar());
-
-        MaquinaTipoComponeneteDao maqTipoCompDao = new MaquinaTipoComponeneteDao();
-        Memoria memoria = looca.getMemoria();
-        Processador processador = looca.getProcessador();
-        Disco disco = looca.getGrupoDeDiscos().getDiscos().get(0);
-       // Rede rede = looca.getRede();
-
-
-        maqTipoCompDao.salvar(processador, memoria, disco);//rede);
-        System.out.println(maqTipoCompDao.listar());
-
         DadosComponentesDao dadosComponentesDao = new DadosComponentesDao();
 
-        dadosComponentesDao.salvar(processador, memoria,disco);//rede);
-        System.out.println(dadosComponentesDao.listar());
-    }
+        maquinaDao.salvar();
 
+        Timer timer = new Timer();
+        TimerTask inserirBanco = new TimerTask() {
+            @Override
+            public void run() {
+                maquinaTipoComponeneteDao.salvar();
+                dadosComponentesDao.salvar();
+            }
+        };
+        timer.scheduleAtFixedRate(inserirBanco, 0, 1000);
+    }
 }
