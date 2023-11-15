@@ -3,6 +3,8 @@ package conexao;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Statement;
+
 public class Conexao {
 
     private JdbcTemplate conexaoDoBanco;

@@ -1,28 +1,18 @@
 package modelo;
 
 public class Maquina {
-    private Integer idMaquina;
+    private String idMaquina;
     private String sistemaOperacional;
     private Integer arquitetura;
     private String fabricante;
     private String tempoAtividade;
-    public Maquina(String sistemaOperacional, Integer arquitetura, String fabricante, String tempoAtividade) {
-        idMaquina = null;
-        this.sistemaOperacional = sistemaOperacional;
-        this.arquitetura = arquitetura;
-        this.fabricante = fabricante;
-        this.tempoAtividade = tempoAtividade;
+    private Integer fkAme;
 
-    }
-
-    public Maquina() {
-    }
-
-    public Integer getIdMaquina() {
+    public String getIdMaquina() {
         return idMaquina;
     }
 
-    public void setIdMaquina(Integer idMaquina) {
+    public void setIdMaquina(String idMaquina) {
         this.idMaquina = idMaquina;
     }
 
@@ -58,16 +48,23 @@ public class Maquina {
         this.tempoAtividade = tempoAtividade;
     }
 
+    public Integer getFkAme() {
+        return fkAme;
+    }
+
+    public void setFkAme(Integer fkAme) {
+        this.fkAme = fkAme;
+    }
 
     @Override
     public String toString() {
         return """
-                Id Máquina: %d
-                Sistema Opercaional: %s
-                Arquitetura: %d
-                Fabricante: %s
-                Tempo Atividade: %s
-               
-                """.formatted(idMaquina, sistemaOperacional, arquitetura, fabricante, tempoAtividade);
+                idMaquina:              %s
+                Sistema Operacional:    %s
+                Arquitetura:            %d
+                Fabricante:             %s
+                Tempo atividade:        %s
+                fkAme:                  %d""".formatted(idMaquina, sistemaOperacional, arquitetura, fabricante,
+                fabricante, tempoAtividade, fkAme);
     }
 }

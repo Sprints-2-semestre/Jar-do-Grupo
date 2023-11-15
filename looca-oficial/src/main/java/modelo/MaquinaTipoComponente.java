@@ -1,46 +1,78 @@
 package modelo;
 
+import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.processos.Processo;
+import com.github.britooo.looca.api.group.rede.RedeInterface;
+import com.github.britooo.looca.api.group.rede.RedeInterfaceGroup;
+import conexao.Conexao;
+import dao.ValidacaoIdMaquina;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MaquinaTipoComponente {
-    private Integer idMaqTipoComp;
-    private Integer fkMaquina;
+    Looca looca = new Looca();
+    Conexao conexao = new Conexao();
+    JdbcTemplate con = conexao.getConexaoDoBanco();
+    private String fkMaquina;
     private Integer fkTipoComp;
-    private String idProcessador;
-    private Integer num_ProcesLogicos;
-    private Integer num_ProcesFisicos;
-    private Double tamanhoTotal;
+    private Integer numProcesLogicos;
+    private Integer numProcesFisicos;
+    private Long tamanhoTotalRam;
+    private Long tamanhoTotalDisco;
     private String enderecoMac;
     private String numSerial;
     private String ipv4;
+    List<RedeInterface> redes = new ArrayList<>();
+    ValidacaoIdMaquina validIdMaquina = new ValidacaoIdMaquina();
 
-    public MaquinaTipoComponente(Integer fkMaquina, Integer fkTipoComp, String idProcessador, Integer num_ProcesLogicos, Integer num_ProcesFisicos, Double tamanhoTotal, String enderecoMac, String numSerial, String ipv4) {
-        idMaqTipoComp = null;
-        this.fkMaquina = fkMaquina;
-        this.fkTipoComp = fkTipoComp;
-        this.idProcessador = idProcessador;
-        this.num_ProcesLogicos = num_ProcesLogicos;
-        this.num_ProcesFisicos = num_ProcesFisicos;
-        this.tamanhoTotal = tamanhoTotal;
-        this.enderecoMac = enderecoMac;
-        this.numSerial = numSerial;
-        this.ipv4 = ipv4;
+    public void salvar() {
+        fkMaquina = looca.getProcessador().getId();
+        Boolean existeIdMaquina = validIdMaquina.verificarParametro(fkMaquina);
+
+        if(existeIdMaquina) {
+//      Captura dados físicos do processador
+        numProcesFisicos = looca.getProcessador().getNumeroCpusFisicas();
+        numProcesLogicos = looca.getProcessador().getNumeroCpusLogicas();
+        fkMaquina = looca.getProcessador().getId();
+
+        // Captura dados físicos da RAM
+//        tamanhoTotalRam = looca.getMemoria().getTotal() / 1000000000;
+//
+//        // Captura dados físicos de disco
+//        numSerial = looca.getGrupoDeDiscos().getDiscos().get(0).getSerial();
+//        tamanhoTotalDisco = looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000000000;
+
+        con.update("INSERT INTO maquinaTipoComponente (numProcesLogicos, numProcesFisicos, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numProcesFisicos, numProcesLogicos, fkMaquina, 1);
+
+//        con.update("INSERT INTO maquinaTipoComponente (tamanhoTotalRam, fkMaquina, fkTipoComp) VALUES (?, ?, ?);", tamanhoTotalRam, fkMaquina, 2);
+//
+//        con.update("INSERT INTO maquinaTipoComponente (numSerial, tamanhoTotalDisco, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numSerial, tamanhoTotalDisco, fkMaquina, 3);
+
+            // Captura dados físicos de rede
+//            for (int i = 0; i < redes.size(); i++) {
+//                enderecoMac = redes.get(i).getEnderecoMac();
+//                ipv4 = redes.get(i).getEnderecoIpv4().toString();
+//                if (redes.get(i).getBytesRecebidos() > 0 && redes.get(i).getBytesEnviados() > 0) {
+//                    con.update("INSERT INTO maquinaTipoComponente (enderecoMac, ipv4, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", enderecoMac, ipv4, fkMaquina, 4);
+//                    break;
+//                }
+//            }
+        } else {
+            System.out.println("Caiu no else");
+        }
     }
 
-    public MaquinaTipoComponente() {
+    public void listar() {
+
     }
 
-    public Integer getIdMaqTipoComp() {
-        return idMaqTipoComp;
-    }
-
-    public void setIdMaqTipoComp(Integer idMaqTipoComp) {
-        this.idMaqTipoComp = idMaqTipoComp;
-    }
-
-    public Integer getFkMaquina() {
+    public String getFkMaquina() {
         return fkMaquina;
     }
 
-    public void setFkMaquina(Integer fkMaquina) {
+    public void setFkMaquina(String fkMaquina) {
         this.fkMaquina = fkMaquina;
     }
 
@@ -52,36 +84,36 @@ public class MaquinaTipoComponente {
         this.fkTipoComp = fkTipoComp;
     }
 
-    public String getIdProcessador() {
-        return idProcessador;
+    public Integer getNumProcesLogicos() {
+        return numProcesLogicos;
     }
 
-    public void setIdProcessador(String idProcessador) {
-        this.idProcessador = idProcessador;
+    public void setNumProcesLogicos(Integer numProcesLogicos) {
+        this.numProcesLogicos = numProcesLogicos;
     }
 
-    public Integer getNum_ProcesLogicos() {
-        return num_ProcesLogicos;
+    public Integer getNumProcesFisicos() {
+        return numProcesFisicos;
     }
 
-    public void setNum_ProcesLogicos(Integer num_ProcesLogicos) {
-        this.num_ProcesLogicos = num_ProcesLogicos;
+    public void setNumProcesFisicos(Integer numProcesFisicos) {
+        this.numProcesFisicos = numProcesFisicos;
     }
 
-    public Integer getNum_ProcesFisicos() {
-        return num_ProcesFisicos;
+    public Long getTamanhoTotalRam() {
+        return tamanhoTotalRam;
     }
 
-    public void setNum_ProcesFisicos(Integer num_ProcesFisicos) {
-        this.num_ProcesFisicos = num_ProcesFisicos;
+    public void setTamanhoTotalRam(Long tamanhoTotalRam) {
+        this.tamanhoTotalRam = tamanhoTotalRam;
     }
 
-    public Double getTamanhoTotal() {
-        return tamanhoTotal;
+    public Long getTamanhoTotalDisco() {
+        return tamanhoTotalDisco;
     }
 
-    public void setTamanhoTotal(Double tamanhoTotal) {
-        this.tamanhoTotal = tamanhoTotal;
+    public void setTamanhoTotalDisco(Long tamanhoTotalDisco) {
+        this.tamanhoTotalDisco = tamanhoTotalDisco;
     }
 
     public String getEnderecoMac() {
@@ -111,16 +143,17 @@ public class MaquinaTipoComponente {
     @Override
     public String toString() {
         return """
-                Id Maquina Tipo Componente: %d
-                Fk Maquina: %d
-                Fk Tipo Componente: %d
-                Id Processador: %s
-                Número Processadores Lógicos: %d
-                Número Processadores Físicos: %d
-                Tamanho Total: %.4f
-                Endereço Mac: %s
-                Número Serial: %s
-                Ipv4: %s
-                """.formatted(idMaqTipoComp, fkMaquina, fkTipoComp, idProcessador, num_ProcesLogicos, num_ProcesFisicos, tamanhoTotal, enderecoMac, numSerial, ipv4);
+                fkMaquina:          %s
+                fkTipoComp:         %d
+                numProcesLogicos:   %d
+                numProcesFisicos:   %d
+                tamanhoTotalTam:    %.2f
+                tamanhoTotalDisco:  %.2f
+                enderecoMac:        %s
+                ipv4:               %s
+                pid:                %s
+                nomeProcesso:       %s""".formatted(fkMaquina, fkTipoComp, numProcesLogicos,
+                numProcesFisicos, tamanhoTotalRam, tamanhoTotalDisco, enderecoMac, numSerial, ipv4);
+
     }
 }

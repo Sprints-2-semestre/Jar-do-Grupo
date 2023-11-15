@@ -1,38 +1,52 @@
 package teste;
 
-import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.discos.Disco;
-import com.github.britooo.looca.api.group.discos.DiscoGrupo;
-import com.github.britooo.looca.api.group.memoria.Memoria;
-import com.github.britooo.looca.api.group.processador.Processador;
-import com.github.britooo.looca.api.group.rede.Rede;
-import com.github.britooo.looca.api.group.rede.RedeInterface;
-import com.github.britooo.looca.api.group.sistema.Sistema;
+import conexao.Conexao;
 import dao.DadosComponentesDao;
 import dao.MaquinaDao;
-import dao.MaquinaTipoComponeneteDao;
-import oshi.SystemInfo;
+import dao.MaquinaTipoComponenteDao;
+import dao.ValidacaoEmail;
+import modelo.Maquina;
+import modelo.MaquinaTipoComponente;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.sql.SQLException;
+import java.util.*;
 
 public class Teste {
     public static void main(String[] args) {
-        MaquinaTipoComponeneteDao maquinaTipoComponeneteDao = new MaquinaTipoComponeneteDao();
-        MaquinaDao maquinaDao = new MaquinaDao();
-        DadosComponentesDao dadosComponentesDao = new DadosComponentesDao();
+        ValidacaoEmail validacaoEmail = new ValidacaoEmail();
 
-        maquinaDao.salvar();
+        Scanner leitor = new Scanner(System.in);
 
-        Timer timer = new Timer();
-        TimerTask inserirBanco = new TimerTask() {
-            @Override
-            public void run() {
-                maquinaTipoComponeneteDao.salvar();
-                dadosComponentesDao.salvar();
-            }
-        };
-        timer.scheduleAtFixedRate(inserirBanco, 0, 1000);
+        System.out.println("""
+                ------------------------------------------------
+                |           Seja Bem Vindo a Fármacos          |
+                ------------------------------------------------
+                | Digite o seu email para verificarmos se você |
+                | tem acesso ao nosso sistema                  |
+                |                                              |
+                | Digite seu email:                            |
+                |                                              |
+                ------------------------------------------------
+                """);
+        String emailUsuario = leitor.next();
+
+        Boolean existeEmail = validacaoEmail.verificarParametro(emailUsuario);
+
+        if (existeEmail.equals(true)) {
+            MaquinaDao maquinaDao = new MaquinaDao();
+            MaquinaTipoComponente maquinaTipoComponente = new MaquinaTipoComponente();
+            Timer timer = new Timer();
+
+            TimerTask inserirBanco = new TimerTask() {
+                @Override
+                public void run() {
+                    maquinaDao.salvar();
+                }
+            };
+            timer.scheduleAtFixedRate(inserirBanco, 0, 4000);
+        } else{
+            System.out.println("Não foi encontrado seu email. Contrate o nosso serviço primeiro. Obrigado");
+        }
     }
 }
