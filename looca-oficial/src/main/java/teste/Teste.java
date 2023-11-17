@@ -9,11 +9,12 @@ import modelo.Maquina;
 import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
 public class Teste {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ValidacaoEmail validacaoEmail = new ValidacaoEmail();
 
         Scanner leitor = new Scanner(System.in);
@@ -41,7 +42,11 @@ public class Teste {
             TimerTask inserirBanco = new TimerTask() {
                 @Override
                 public void run() {
-                    maquinaDao.salvar();
+                    try {
+                        maquinaDao.salvar();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             };
             timer.scheduleAtFixedRate(inserirBanco, 0, 4000);

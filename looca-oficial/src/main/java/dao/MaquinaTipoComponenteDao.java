@@ -1,15 +1,22 @@
 package dao;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
 import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MaquinaTipoComponenteDao {
@@ -42,13 +49,101 @@ public class MaquinaTipoComponenteDao {
     List<RedeInterface> redes = looca.getRede().getGrupoDeInterfaces().getInterfaces();
 
 
-    public void salvar() {
-        con.update("INSERT INTO maquinaTipoComponente (numProcesLogicos, numProcesFisicos, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", qtdCpuLogico, qtdCpuFisico, fkMaquina, 1);
+    public void salvar() throws IOException {
+        try {
+            con.update("INSERT INTO maquinaTipoComponente (numProcesLogicos, numProcesFisicos, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", qtdCpuLogico, qtdCpuFisico, fkMaquina, 1);
+        }catch (Exception erroInsertMaquinaTipoComponente) {
+            erroInsertMaquinaTipoComponente.getMessage();
+            Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+            Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+            File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
-        con.update("INSERT INTO maquinaTipoComponente (tamanhoTotalRam, fkMaquina, fkTipoComp) VALUES (?, ?, ?);", totalRam, fkMaquina, 2);
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
 
-        con.update("INSERT INTO maquinaTipoComponente (numSerial, tamanhoTotalDisco, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numSerial, totalDisco, fkMaquina, 3);
+                bw.write(LocalDateTime.now() + erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
 
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+        }
+        try {
+            con.update("INSERT INTO maquinaTipoComponente (tamanhoTotalRam, fkMaquina, fkTipoComp) VALUES (?, ?, ?);", totalRam, fkMaquina, 2);
+        }catch (Exception erroInsertMaquinaTipoComponente) {
+            erroInsertMaquinaTipoComponente.getMessage();
+            Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+            Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+            File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+        }
+        try {
+            con.update("INSERT INTO maquinaTipoComponente (numSerial, tamanhoTotalDisco, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numSerial, totalDisco, fkMaquina, 3);
+        }catch (Exception erroInsertMaquinaTipoComponente) {
+            erroInsertMaquinaTipoComponente.getMessage();
+            Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+            Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+            File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() +
+                        erroInsertMaquinaTipoComponente.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+        }
         for (int i = 0; i < redes.size(); i++) {
             if (redes.get(i).getBytesRecebidos() > 0 && redes.get(i).getBytesEnviados() > 0) {
                 enderecoMac = redes.get(i).getEnderecoMac();
@@ -66,12 +161,42 @@ public class MaquinaTipoComponenteDao {
                 String bytesEnviadoFormatado = String.format("%.2f", bytesEnviadosDouble);
                 bytesEnviadoFormatado = bytesEnviadoFormatado.replace(",",".");
 
-                con.update("INSERT INTO dadosComponente (bytesRecebido, bytesEnviado, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", bytesRecebidoFormatado, bytesEnviadoFormatado, fkMaquina, 4);
+                try {
+                    con.update("INSERT INTO dadosComponente (bytesRecebido, bytesEnviado, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", bytesRecebidoFormatado, bytesEnviadoFormatado, fkMaquina, 4);
+                }catch (Exception erroInsertBytes) {
+                    erroInsertBytes.getMessage();
+                    Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                    Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                    File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
+                    if (!Files.exists(path)) {
+                        Files.createDirectory(path);
+                            Files.createDirectory(path1);
+                                log.createNewFile();
+                                FileWriter fw = new FileWriter(log, true);
+                                BufferedWriter bw = new BufferedWriter(fw);
+
+                                bw.write(LocalDateTime.now() + erroInsertBytes.getMessage());
+                                bw.newLine();
+
+                                bw.close();
+                                fw.close();
+                            }else {
+                        FileWriter fw = new FileWriter(log, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + erroInsertBytes.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                        }
+                    }
                 break;
+                }
             }
-        }
-    }
+
 
     public void listar() {
         System.out.println(con.query("""
