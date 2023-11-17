@@ -12,13 +12,23 @@ import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Class.forName;
+import static jdk.internal.org.jline.utils.Colors.s;
 
 public class MaquinaDao {
     Looca looca = new Looca();
@@ -37,10 +47,10 @@ public class MaquinaDao {
     ValidacaoIdMaquina validIdMaquina = new ValidacaoIdMaquina();
     MaquinaTipoComponenteDao maquinaTipoComponenteDao = new MaquinaTipoComponenteDao();
 
-    public void salvar(){
+    public void salvar() throws IOException {
         Boolean existeIdMaquina = validIdMaquina.verificarParametro(idMaquina);
 
-        if(existeIdMaquina){
+        if (existeIdMaquina) {
             maquinaTipoComponenteDao.salvar();
 
             Double usoCpu = looca.getProcessador().getUso();
@@ -52,8 +62,6 @@ public class MaquinaDao {
             Long usoRam = looca.getMemoria().getEmUso();
             Double divisaoUsoRam = (usoRam / 1000000000.0);
             String usoRamFormatado = String.format("%.1f", divisaoUsoRam);
-            StringBuilder s = new StringBuilder(usoRamFormatado);
-            s.setCharAt(1, '.');
 
 
 //            if (s >= parametroRamPreocupante && s < parametroRamCritico) {
@@ -65,60 +73,242 @@ public class MaquinaDao {
             String ramDisponivelFormatado = String.format("%.1f", divisaoRamDisponivel);
             StringBuilder sb = new StringBuilder(ramDisponivelFormatado);
             sb.setCharAt(1, '.');
-
-
-            // Captura do uso de DISCO;
-            Long tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
-            Long tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
-
-            con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
-
-            con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
-
-            con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
-
-        } else{
-            con.update("INSERT INTO maquina (idMaquina, sistemaOperacional, arquitetura, fabricante, tempoAtividade) VALUES (?, ?, ?, ?, ?);",
-                    idMaquina, sistemaOperacional, arquitetura,
-                    fabricante, tempoAtividade);
-
-            maquinaTipoComponenteDao.salvar();
-
-            Double usoCpu = looca.getProcessador().getUso();
-
-            // Captura do uso de RAM;
-            Long usoRam = looca.getMemoria().getEmUso();
-            Double divisaoUsoRam = (usoRam / 1000000000.0);
-            String usoRamFormatado = String.format("%.1f", divisaoUsoRam);
             StringBuilder s = new StringBuilder(usoRamFormatado);
             s.setCharAt(1, '.');
 
-            Long ramDisponivel = looca.getMemoria().getDisponivel();
-            Double divisaoRamDisponivel = (ramDisponivel / 1000000000.0);
-            String ramDisponivelFormatado = String.format("%.1f", divisaoRamDisponivel);
-            StringBuilder sb = new StringBuilder(ramDisponivelFormatado);
-            sb.setCharAt(1, '.');
-
 
             // Captura do uso de DISCO;
             Long tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
             Long tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
 
-            con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
+            try {
+                con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
+            } catch (Exception erroInsertCPU) {
+                erroInsertCPU.getMessage();
+                Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
+                if (!Files.exists(path)) {
+                    Files.createDirectory(path);
+                    Files.createDirectory(path1);
+                    log.createNewFile();
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(LocalDateTime.now() + erroInsertCPU.getMessage());
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }else {
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(LocalDateTime.now() + erroInsertCPU.getMessage());
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }
+            }
+        try {
             con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
+        } catch (Exception erroInsertMemoria) {
+            erroInsertMemoria.getMessage();
+            Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+            Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+            File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
-            con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMemoria.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertMemoria.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
         }
-    }
+        try {
+            con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
+        } catch (Exception erroInsertDisco) {
+            erroInsertDisco.getMessage();
+            Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+            Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+            File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
-    public void listar() {
-        System.out.println(con.query("""
-                        select maquina.sistemaOperacional,
-                        maquina.arquitetura,
-                        maquina.fabricante,
-                        maquina.tempoAtividade
-                        from maquina;""",
-                new BeanPropertyRowMapper<>(Maquina.class)));
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertDisco.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(LocalDateTime.now() + erroInsertDisco.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+                try {
+                    con.update("INSERT INTO maquina (idMaquina, sistemaOperacional, arquitetura, fabricante, tempoAtividade) VALUES (?, ?, ?, ?, ?);",
+                            idMaquina, sistemaOperacional, arquitetura,
+                            fabricante, tempoAtividade);
+
+                    maquinaTipoComponenteDao.salvar();
+                } catch (Exception erroInsertSO) {
+                    erroInsertSO.getMessage();
+                    Path path2 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                    Path path3 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                    File log1 = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+                    if (!Files.exists(path)) {
+                        Files.createDirectory(path2);
+                        Files.createDirectory(path3);
+                        log.createNewFile();
+                        FileWriter fw = new FileWriter(log1, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + erroInsertSO.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }else {
+                        FileWriter fw = new FileWriter(log, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + erroInsertSO.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                }
+
+                // Captura do uso de DISCO;
+                tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
+                tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
+
+                try {
+                    con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
+                } catch (Exception e) {
+                    e.getMessage();
+                    Path path2 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                    Path path3 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                    File log1 = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+                    if (!Files.exists(path)) {
+                        Files.createDirectory(path2);
+                        Files.createDirectory(path3);
+                        log.createNewFile();
+                        FileWriter fw = new FileWriter(log1, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }else {
+                        FileWriter fw = new FileWriter(log, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                }
+                try {
+                    con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
+                } catch (Exception e) {
+                    e.getMessage();
+                    Path path2 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                    Path path3 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                    File log1 = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+                    if (!Files.exists(path)) {
+                        Files.createDirectory(path2);
+                        Files.createDirectory(path3);
+                        log.createNewFile();
+                        FileWriter fw = new FileWriter(log1, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                    else {
+                        FileWriter fw = new FileWriter(log, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                }
+                try {
+                    con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
+                }catch (Exception e) {
+                    e.getMessage();
+                    Path path2 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                    Path path3 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                    File log1 = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+
+                    if (!Files.exists(path)) {
+                        Files.createDirectory(path2);
+                        Files.createDirectory(path3);
+                        log.createNewFile();
+                        FileWriter fw = new FileWriter(log1, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                    else {
+                        FileWriter fw = new FileWriter(log, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+
+                        bw.write(LocalDateTime.now() + e.getMessage());
+                        bw.newLine();
+
+                        bw.close();
+                        fw.close();
+                    }
+                }
+            }
+        }
     }
 }

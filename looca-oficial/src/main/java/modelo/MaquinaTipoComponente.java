@@ -8,6 +8,15 @@ import conexao.Conexao;
 import dao.ValidacaoIdMaquina;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +36,7 @@ public class MaquinaTipoComponente {
     List<RedeInterface> redes = new ArrayList<>();
     ValidacaoIdMaquina validIdMaquina = new ValidacaoIdMaquina();
 
-    public void salvar() {
+    public void salvar() throws IOException {
         fkMaquina = looca.getProcessador().getId();
         Boolean existeIdMaquina = validIdMaquina.verificarParametro(fkMaquina);
 
@@ -44,8 +53,28 @@ public class MaquinaTipoComponente {
 //        numSerial = looca.getGrupoDeDiscos().getDiscos().get(0).getSerial();
 //        tamanhoTotalDisco = looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000000000;
 
-        con.update("INSERT INTO maquinaTipoComponente (numProcesLogicos, numProcesFisicos, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numProcesFisicos, numProcesLogicos, fkMaquina, 1);
+            try {
+                con.update("INSERT INTO maquinaTipoComponente (numProcesLogicos, numProcesFisicos, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numProcesFisicos, numProcesLogicos, fkMaquina, 1);
+            }catch (Exception erroInsertProcessador) {
+                erroInsertProcessador.getMessage();
+                Path path = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs");
+                Path path1 = Paths.get("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now());
+                File log = new File("C:/Users/vitor/OneDrive/Documentos/SPTECH/projeto - LOGS/Jar-do-Grupo/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
 
+                if (!Files.exists(path)) {
+                    Files.createDirectory(path);
+                    Files.createDirectory(path1);
+                    log.createNewFile();
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(LocalDateTime.now() + erroInsertProcessador.getMessage());
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }
+            }
 //        con.update("INSERT INTO maquinaTipoComponente (tamanhoTotalRam, fkMaquina, fkTipoComp) VALUES (?, ?, ?);", tamanhoTotalRam, fkMaquina, 2);
 //
 //        con.update("INSERT INTO maquinaTipoComponente (numSerial, tamanhoTotalDisco, fkMaquina, fkTipoComp) VALUES (?, ?, ?, ?);", numSerial, tamanhoTotalDisco, fkMaquina, 3);
