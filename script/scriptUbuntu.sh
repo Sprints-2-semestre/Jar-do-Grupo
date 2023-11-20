@@ -5,14 +5,52 @@ echo -e "Olá, serei seu assistente para instalação!"
 echo -e "Verificando se você possui o Docker instalado na sua máquina!"
 sleep 1
 
+
+
 # Verifica se o script está sendo executado como root
 if [ "$EUID" -ne 0 ]; then
   echo "Por favor, execute este script como root."
   exit 1
 fi
 
+
+
 # Atualiza a lista de pacotes
 sudo apt update && sudo apt upgrade -y
+
+VERSAO=17
+# Verifica se o Java está instalado
+if java -version &> /dev/null; then
+    echo -e "Você já possui o Java instalado na sua máquina!"
+    echo -e "Vamos atualizar os pacotes..."
+    sleep 1
+    sudo apt update && sudo apt upgrade -y
+    echo -e "Pacotes atualizados!"
+else
+    echo -e "Você não possui o Java instalado na sua máquina!"
+    echo -e "Vamos instalar o Java..."
+    sleep 1
+    sudo apt install openjdk-$VERSAO-jdk -y
+    echo -e "Java instalado!"
+fi
+curl -LJO https://github.com/Sprints-2-semestre/Jar-do-Grupo/raw/main/looca-oficial/target/looca-oficial-1.0-jar-with-dependencies.jar 
+if [ $? -eq 0 ]; then
+    # Verificando se o arquivo baixado é um arquivo .jar válido
+    if [ -f looca-oficial-1.0-jar-with-dependencies.jar ]; then
+        echo ""
+        echo "Iniciando o software"
+        sleep 1
+        echo "Bem-Vindo a Fármacos"
+        echo ""
+        java -jar looca-oficial-1.0-jar-with-dependencies.jar
+    else
+        echo "Erro ao rodar o .jar"
+        exit 1
+    fi
+else
+    echo "Erro ao executar o curl"
+    exit 1
+fi
 
 # Instala o Docker
 sudo apt install docker.io -y
@@ -128,37 +166,4 @@ CREATE TABLE dadosComponente (
 MYSQL_SCRIPT
 EOF
 
-exit
-VERSAO=17
-# Verifica se o Java está instalado
-if java -version &> /dev/null; then
-    echo -e "Você já possui o Java instalado na sua máquina!"
-    echo -e "Vamos atualizar os pacotes..."
-    sleep 1
-    sudo apt update && sudo apt upgrade -y
-    echo -e "Pacotes atualizados!"
-else
-    echo -e "Você não possui o Java instalado na sua máquina!"
-    echo -e "Vamos instalar o Java..."
-    sleep 1
-    sudo apt install openjdk-$VERSAO-jdk -y
-    echo -e "Java instalado!"
-fi
-curl -LJO https://github.com/Sprints-2-semestre/Jar-do-Grupo/raw/main/looca-oficial/target/looca-oficial-1.0-jar-with-dependencies.jar
-if [ $? -eq 0 ]; then
-    # Verificando se o arquivo baixado é um arquivo .jar válido
-    if [ -f looca-oficial-1.0-jar-with-dependencies.jar ]; then
-        echo ""
-        echo "Iniciando o software"
-        sleep 1
-        echo "Bem-Vindo a Fármacos"
-        echo ""
-        java -jar looca-oficial-1.0-jar-with-dependencies.jar
-    else
-        echo "Erro ao rodar o .jar"
-        exit 1
-    fi
-else
-    echo "Erro ao executar o curl"
-    exit 1
-fi
+exit 1
