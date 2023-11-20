@@ -9,11 +9,21 @@ import modelo.Maquina;
 import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Teste {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ValidacaoEmail validacaoEmail = new ValidacaoEmail();
 
         Scanner leitor = new Scanner(System.in);
@@ -33,6 +43,7 @@ public class Teste {
 
         Boolean existeEmail = validacaoEmail.verificarParametro(emailUsuario);
 
+
         if (existeEmail.equals(true)) {
             MaquinaDao maquinaDao = new MaquinaDao();
             MaquinaTipoComponente maquinaTipoComponente = new MaquinaTipoComponente();
@@ -41,12 +52,46 @@ public class Teste {
             TimerTask inserirBanco = new TimerTask() {
                 @Override
                 public void run() {
-                    maquinaDao.salvar();
+                    try {
+                        maquinaDao.salvar();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             };
             timer.scheduleAtFixedRate(inserirBanco, 0, 4000);
         } else{
             System.out.println("Não foi encontrado seu email. Contrate o nosso serviço primeiro. Obrigado");
-        }
+            Path path = Paths.get("C:/Users/Public/logs");
+            Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
+            File log = new File("C:/Users/Public/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+            LocalDateTime momentoAtual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String DateTimeFormatado = momentoAtual.format(formatter);
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Tentativa de EMAIL incorreta...");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+        }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Tentativa de EMAIL incorreta...");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
     }
+}
 }

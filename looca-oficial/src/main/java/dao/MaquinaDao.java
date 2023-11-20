@@ -12,9 +12,19 @@ import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +47,10 @@ public class MaquinaDao {
     ValidacaoIdMaquina validIdMaquina = new ValidacaoIdMaquina();
     MaquinaTipoComponenteDao maquinaTipoComponenteDao = new MaquinaTipoComponenteDao();
 
-    public void salvar(){
+    public void salvar() throws IOException {
         Boolean existeIdMaquina = validIdMaquina.verificarParametro(idMaquina);
 
+        try{
         if(existeIdMaquina){
             maquinaTipoComponenteDao.salvar();
 
@@ -77,7 +88,39 @@ public class MaquinaDao {
 
             con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
 
-        } else{
+            Path path = Paths.get("C:/Users/Public/logs");
+            Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
+            File log = new File("C:/Users/Public/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+            LocalDateTime momentoAtual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String DateTimeFormatado = momentoAtual.format(formatter);
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Inserindo dados na tabela dadosComponente (lines 84 até 88)");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Inserindo dados na tabela dadosComponente (lines 84 até 88)");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+
+        }
+        else{
             con.update("INSERT INTO maquina (idMaquina, sistemaOperacional, arquitetura, fabricante, tempoAtividade) VALUES (?, ?, ?, ?, ?);",
                     idMaquina, sistemaOperacional, arquitetura,
                     fabricante, tempoAtividade);
@@ -109,16 +152,70 @@ public class MaquinaDao {
             con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
 
             con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
-        }
-    }
 
-    public void listar() {
-        System.out.println(con.query("""
-                        select maquina.sistemaOperacional,
-                        maquina.arquitetura,
-                        maquina.fabricante,
-                        maquina.tempoAtividade
-                        from maquina;""",
-                new BeanPropertyRowMapper<>(Maquina.class)));
+            Path path = Paths.get("C:/Users/Public/logs");
+            Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
+            File log = new File("C:/Users/Public/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+            LocalDateTime momentoAtual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String DateTimeFormatado = momentoAtual.format(formatter);
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Não tinha máquina, mas o java criou a máquina e capturou os dados da tabela dadosComponente (lines 136 até 140)");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + " Não tinha máquina, mas o java criou a máquina e capturou os dados da tabela dadosComponente (lines 136 até 140)");
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+        }
+    } catch (Exception erroCapturaDadosMaquinaDao){
+        erroCapturaDadosMaquinaDao.getMessage();
+            Path path = Paths.get("C:/Users/Public/logs");
+            Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
+            File log = new File("C:/Users/Public/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");
+            LocalDateTime momentoAtual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String DateTimeFormatado = momentoAtual.format(formatter);
+
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+                Files.createDirectory(path1);
+                log.createNewFile();
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + erroCapturaDadosMaquinaDao.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }else {
+                FileWriter fw = new FileWriter(log, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(DateTimeFormatado + erroCapturaDadosMaquinaDao.getMessage());
+                bw.newLine();
+
+                bw.close();
+                fw.close();
+            }
+        }
     }
 }

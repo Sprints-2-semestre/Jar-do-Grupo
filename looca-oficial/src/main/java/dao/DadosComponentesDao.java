@@ -47,13 +47,13 @@ public class DadosComponentesDao {
         Long tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
         Long tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
 
-        if (usoCpu < 100.0) {
-            con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina) VALUES (?, ?);", usoCpu, fkMaquina);
-        }
-        con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina) VALUES (?, ?, ?);", s, sb, fkMaquina);
+            if (usoCpu < 100.0) {
+                con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina) VALUES (?, ?);", usoCpu, fkMaquina);
+            }
+            con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina) VALUES (?, ?, ?);", s, sb, fkMaquina);
 
-        con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina) VALUES (?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, fkMaquina);
-    }
+            con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina) VALUES (?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, fkMaquina);
+        }
 
     public void listar() {
         System.out.println(con.query("""

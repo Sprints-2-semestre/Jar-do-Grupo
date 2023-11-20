@@ -18,12 +18,15 @@ public class ValidacaoEmail extends ValidacaoParametro {
     public Boolean verificarParametro(String parametro) {
         List<String> emailsExistentes;
 
-        emailsExistentes = con.queryForList("SELECT email FROM usuario", String.class);
-
+        try {
+            emailsExistentes = con.queryForList("SELECT email FROM usuario", String.class);
         for(int i = 0; i < emailsExistentes.size(); i++){
             if(emailsExistentes.get(i).equals(parametro)){
                 return true;
             }
+        }
+        }catch(Exception erroEmail) {
+            System.err.println(erroEmail.getMessage());
         }
         return false;
     }
