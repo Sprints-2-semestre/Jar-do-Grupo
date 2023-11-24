@@ -121,6 +121,7 @@ public class MaquinaTipoComponenteDao {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
+                if (!Files.exists(path1)){
                 Files.createDirectory(path1);
                 log.createNewFile();
                 FileWriter fw = new FileWriter(log, true);
@@ -131,6 +132,16 @@ public class MaquinaTipoComponenteDao {
 
                 bw.close();
                 fw.close();
+                }else {
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(DateTimeFormatado + " Inserindo dados não voláteis e (bytesRecebidos e bytesEnviados) na tabela maquinaTipoComponente,  (lines 57 até 61)");
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }
             } else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
@@ -153,6 +164,7 @@ public class MaquinaTipoComponenteDao {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
+                if (!Files.exists(path1)){
                 Files.createDirectory(path1);
                 log.createNewFile();
                 FileWriter fw = new FileWriter(log, true);
@@ -162,7 +174,17 @@ public class MaquinaTipoComponenteDao {
                 bw.newLine();
 
                 bw.close();
-                fw.close();
+                fw.close();}
+                else {
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(DateTimeFormatado + " Erro ao tentar capturar os dados não voláteis na tabela maquinaTipoComponente (lines 57 até 61)");
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }
             }else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);

@@ -18,7 +18,7 @@ public class Conexao {
 
         dataSource.setUsername("root");
 
-        dataSource.setPassword("D@vi1606");
+        dataSource.setPassword("quintans123");
 
         this.conexaoDoBanco = new JdbcTemplate(dataSource);
     }

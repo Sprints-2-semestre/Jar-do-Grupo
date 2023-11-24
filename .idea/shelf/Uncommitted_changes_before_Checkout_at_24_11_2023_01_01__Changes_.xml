@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_24_11_2023_01_01_[Changes]" date="1700798513331" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_11_2023_01_01_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 24/11/2023 01:01 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="looca-oficial/target/classes/dao/DadosComponentesDao.class" />
+    <option name="AFTER_PATH" value="looca-oficial/target/classes/dao/DadosComponentesDao.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_11_2023_01_01_[Changes]/DadosComponentesDao.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="looca-oficial/target/classes/dao/MaquinaDao.class" />
+    <option name="AFTER_PATH" value="looca-oficial/target/classes/dao/MaquinaDao.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_11_2023_01_01_[Changes]/MaquinaDao.class" />
+  </binary>
+</changelist>

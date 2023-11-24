@@ -145,8 +145,18 @@ public class MaquinaDao {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
-                Files.createDirectory(path1);
-                log.createNewFile();
+                if(!Files.exists(path1)) {
+                    Files.createDirectory(path1);
+                    log.createNewFile();
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(DateTimeFormatado + " Inserindo dados na tabela dadosComponente (lines 84 até 88)");
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                } else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
 
@@ -155,6 +165,7 @@ public class MaquinaDao {
 
                 bw.close();
                 fw.close();
+                }
             }else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
@@ -257,16 +268,27 @@ public class MaquinaDao {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
-                Files.createDirectory(path1);
-                log.createNewFile();
-                FileWriter fw = new FileWriter(log, true);
-                BufferedWriter bw = new BufferedWriter(fw);
+                if (!Files.exists(path1)) {
+                    Files.createDirectory(path1);
+                    log.createNewFile();
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
 
-                bw.write(DateTimeFormatado + " Não tinha máquina, mas o java criou a máquina e capturou os dados da tabela dadosComponente (lines 136 até 140)");
-                bw.newLine();
+                    bw.write(DateTimeFormatado + " Não tinha máquina, mas o java criou a máquina e capturou os dados da tabela dadosComponente (lines 136 até 140)");
+                    bw.newLine();
 
-                bw.close();
-                fw.close();
+                    bw.close();
+                    fw.close();
+                }else {
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(DateTimeFormatado + " Não tinha máquina, mas o java criou a máquina e capturou os dados da tabela dadosComponente (lines 136 até 140)");
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();
+                }
             }else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
@@ -290,6 +312,7 @@ public class MaquinaDao {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
+                if (!Files.exists(path1)) {
                 Files.createDirectory(path1);
                 log.createNewFile();
                 FileWriter fw = new FileWriter(log, true);
@@ -300,6 +323,15 @@ public class MaquinaDao {
 
                 bw.close();
                 fw.close();
+                }else {
+                    FileWriter fw = new FileWriter(log, true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(DateTimeFormatado + erroCapturaDadosMaquinaDao.getMessage());
+                    bw.newLine();
+
+                    bw.close();
+                    fw.close();}
             }else {
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
