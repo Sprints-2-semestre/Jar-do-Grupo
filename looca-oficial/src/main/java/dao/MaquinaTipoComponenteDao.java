@@ -4,6 +4,8 @@ import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
+import conexao.ConexaoSlack;
+import modelo.EnviarSlack;
 import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +32,7 @@ public class MaquinaTipoComponenteDao {
 
     // Captura da fkMaquina;
     private String fkMaquina = looca.getProcessador().getId();
+    private String hostName = looca.getRede().getParametros().getHostName();
 
 
     // Capturas da Máquina
@@ -79,9 +82,35 @@ public class MaquinaTipoComponenteDao {
 
                     con.update("INSERT INTO dadosComponente (bytesRecebido, bytesEnviado, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", bytesRecebidoFormatado, bytesEnviadoFormatado, fkMaquina, 4);
 
+
+                    EnviarSlack slack = new EnviarSlack();
+
+                    Double parametroMaximoRede = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 4 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+                    Double parametroMedioRede = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 4 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+                    if(bytesRecebidosDouble >= parametroMedioRede && bytesRecebidosDouble < parametroMaximoRede){
+                        slack.enviarMensagemRedeMedio(hostName, bytesRecebidosDouble);
+                    }
+
+                    if(bytesEnviadosDouble >= parametroMedioRede && bytesEnviadosDouble < parametroMaximoRede){
+                        slack.enviarMensagemRedeMedio(hostName, bytesEnviadosDouble);
+                    }
+
+                    if(bytesRecebidosDouble >= parametroMaximoRede){
+                        slack.enviarMensagemRedeMaximo(hostName, bytesRecebidosDouble);
+                    }
+
+                    if(bytesEnviadosDouble >= parametroMaximoRede){
+                        slack.enviarMensagemRedeMaximo(hostName, bytesEnviadosDouble);
+                    }
+
                     break;
                 }
             }
+
+
+
             Path path = Paths.get("C:/Users/Public/logs");
             Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
             File log = new File("C:/Users/Public/logs/" + LocalDate.now() + "/" + LocalDate.now() + ".txt");

@@ -7,6 +7,7 @@ import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import conexao.Conexao;
 import conexao.ConexaoSlack;
+import modelo.EnviarSlack;
 import modelo.Maquina;
 import modelo.MaquinaTipoComponente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -36,6 +37,7 @@ public class MaquinaDao {
     JdbcTemplate con = conexao.getConexaoDoBanco();
 
     private String idMaquina = looca.getProcessador().getId();
+    private String hostName = looca.getRede().getParametros().getHostName();
     private String sistemaOperacional = looca.getSistema().getSistemaOperacional();
     private Integer arquitetura = looca.getSistema().getArquitetura();
     private String fabricante = looca.getProcessador().getFabricante();
@@ -82,11 +84,56 @@ public class MaquinaDao {
             Long tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
             Long tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
 
+            Integer atualDisco = Math.toIntExact(tamanhoTotalDisco - tamanhoDisponivel);
+
             con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
 
             con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
 
             con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
+
+            // Conexão Slack
+
+            EnviarSlack slack = new EnviarSlack();
+
+            Double parametroMaximoCpu = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 1 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioCpu = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 1 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            if(usoCpu >= parametroMedioCpu && usoCpu < parametroMaximoCpu){
+                slack.enviarMensagemCpuMedio(hostName, usoCpu);
+            }
+
+            if (usoCpu >= parametroMaximoCpu){
+                slack.enviarMensagemCpuMaximo(hostName, usoCpu);
+            }
+
+            Double parametroMaximoram = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 2 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioRam = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 2 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            if(divisaoUsoRam >= parametroMedioRam && divisaoUsoRam < parametroMaximoram){
+                slack.enviarMensagemRamMedio(hostName, divisaoUsoRam);
+            }
+
+            if(divisaoUsoRam >= parametroMaximoram){
+                slack.enviarMensagemRamMaximo(hostName, divisaoUsoRam);
+            }
+
+            Double parametroMaximoDisco = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 3 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioDisco = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 3 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+
+            if(atualDisco >= parametroMedioDisco && atualDisco < parametroMaximoDisco){
+                slack.enviarMensagemDiscoMedio(hostName, atualDisco);
+            }
+
+            if(atualDisco >= parametroMaximoDisco){
+                slack.enviarMensagemDiscoMaximo(hostName, atualDisco);
+            }
+
+            // Fim conexão slack
 
             Path path = Paths.get("C:/Users/Public/logs");
             Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
@@ -121,8 +168,8 @@ public class MaquinaDao {
 
         }
         else{
-            con.update("INSERT INTO maquina (idMaquina, sistemaOperacional, arquitetura, fabricante, tempoAtividade) VALUES (?, ?, ?, ?, ?);",
-                    idMaquina, sistemaOperacional, arquitetura,
+            con.update("INSERT INTO maquina (idMaquina, hostName, sistemaOperacional, arquitetura, fabricante, tempoAtividade) VALUES (?, ?, ?, ?, ?, ?);",
+                    idMaquina, hostName, sistemaOperacional, arquitetura,
                     fabricante, tempoAtividade);
 
             maquinaTipoComponenteDao.salvar();
@@ -147,11 +194,58 @@ public class MaquinaDao {
             Long tamanhoTotalDisco = (looca.getGrupoDeDiscos().getVolumes().get(0).getTotal() / 1000 / 1000 / 1000);
             Long tamanhoDisponivel = (looca.getGrupoDeDiscos().getVolumes().get(0).getDisponivel() / 1000 / 1000 / 1000);
 
+            Integer atualDisco = Math.toIntExact(tamanhoTotalDisco - tamanhoDisponivel);
+
             con.update("INSERT INTO dadosComponente (qtdUsoCpu, fkMaquina, fkTipoComponente) VALUES (?, ?, ?);", usoCpu, idMaquina, 1);
 
             con.update("INSERT INTO dadosComponente (memoriaEmUso, memoriaDisponivel, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", s, sb, idMaquina, 2);
 
             con.update("INSERT INTO dadosComponente (usoAtualDisco, usoDisponivelDisco, fkMaquina, fkTipoComponente) VALUES (?, ?, ?, ?);", (tamanhoTotalDisco - tamanhoDisponivel), tamanhoDisponivel, idMaquina, 3);
+
+
+            // Conexão Slack
+
+            EnviarSlack slack = new EnviarSlack();
+
+            Double parametroMaximoCpu = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 1 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioCpu = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 1 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            if(usoCpu >= parametroMedioCpu && usoCpu < parametroMaximoCpu){
+                slack.enviarMensagemCpuMedio(hostName, usoCpu);
+            }
+
+            if (usoCpu >= parametroMaximoCpu){
+                slack.enviarMensagemCpuMaximo(hostName, usoCpu);
+            }
+
+            Double parametroMaximoram = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 2 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioRam = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 2 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            if(divisaoUsoRam >= parametroMedioRam && divisaoUsoRam < parametroMaximoram){
+                slack.enviarMensagemRamMedio(hostName, divisaoUsoRam);
+            }
+
+            if(divisaoUsoRam >= parametroMaximoram){
+                slack.enviarMensagemRamMaximo(hostName, divisaoUsoRam);
+            }
+
+            Double parametroMaximoDisco = con.queryForObject("SELECT maximo FROM parametro where fkTipoComponente = 3 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+            Double parametroMedioDisco = con.queryForObject("SELECT medio FROM parametro where fkTipoComponente = 3 ORDER BY maximo DESC LIMIT 1;", Double.class);
+
+
+            if(atualDisco >= parametroMedioDisco && atualDisco < parametroMaximoDisco){
+                slack.enviarMensagemDiscoMedio(hostName, atualDisco);
+            }
+
+            if(atualDisco >= parametroMaximoDisco){
+                slack.enviarMensagemDiscoMaximo(hostName, atualDisco);
+            }
+
+            // Fim conexão slack
+
 
             Path path = Paths.get("C:/Users/Public/logs");
             Path path1 = Paths.get("C:/Users/Public/logs/" + LocalDate.now());
