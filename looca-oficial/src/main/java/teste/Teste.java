@@ -72,7 +72,6 @@ public class Teste {
 
             if (!Files.exists(path)) {
                 Files.createDirectory(path);
-                if (!Files.exists(path1)){
                 Files.createDirectory(path1);
                 log.createNewFile();
                 FileWriter fw = new FileWriter(log, true);
@@ -82,20 +81,8 @@ public class Teste {
                 bw.newLine();
 
                 bw.close();
-                fw.close();}
-                else {
-                    FileWriter fw = new FileWriter(log, true);
-                    BufferedWriter bw = new BufferedWriter(fw);
-
-                    bw.write(DateTimeFormatado + " Tentativa de EMAIL incorreta...");
-                    bw.newLine();
-
-                    bw.close();
-                    fw.close();
-                }
+                fw.close();
         }else {
-                if (Files.exists(path1)){
-                    log.createNewFile();
                 FileWriter fw = new FileWriter(log, true);
                 BufferedWriter bw = new BufferedWriter(fw);
 
@@ -103,18 +90,7 @@ public class Teste {
                 bw.newLine();
 
                 bw.close();
-                fw.close();}else {
-                    Files.createDirectory(path1);
-                    log.createNewFile();
-                    FileWriter fw = new FileWriter(log, true);
-                    BufferedWriter bw = new BufferedWriter(fw);
-
-                    bw.write(DateTimeFormatado + " Tentativa de EMAIL incorreta...");
-                    bw.newLine();
-
-                    bw.close();
-                    fw.close();
-                }
+                fw.close();
             }
     }
 }
